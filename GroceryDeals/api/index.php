@@ -18,6 +18,14 @@ if (!is_dir('/tmp/storage')) {
     mkdir('/tmp/storage/logs', 0777, true);
 }
 
+// Override Laravel's cache paths so they point to the writable /tmp folder
+$_SERVER['APP_PACKAGES_CACHE'] = '/tmp/storage/bootstrap/cache/packages.php';
+$_SERVER['APP_SERVICES_CACHE'] = '/tmp/storage/bootstrap/cache/services.php';
+$_SERVER['APP_CONFIG_CACHE'] = '/tmp/storage/bootstrap/cache/config.php';
+$_SERVER['APP_ROUTES_CACHE'] = '/tmp/storage/bootstrap/cache/routes.php';
+$_SERVER['APP_EVENTS_CACHE'] = '/tmp/storage/bootstrap/cache/events.php';
+$_SERVER['VIEW_COMPILED_PATH'] = '/tmp/storage/framework/views';
+
 try {
     require __DIR__ . '/../public/index.php';
 } catch (\Throwable $e) {
