@@ -1,0 +1,67 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: grocerydeals_app
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      APP_NAME: GroceryDeals
+      APP_ENV: local
+      APP_KEY: base64:KeOUuTO3TekJxAsJ3T4DV12Kqa4poDiqes2JfUfIDZc=
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8080
+      DB_CONNECTION: mongodb
+      DB_URI: ${DB_URI:-mongodb://mongo:27017}
+      DB_DATABASE: grocerydeals
+      SESSION_DRIVER: cookie
+      CACHE_STORE: array
+      LOG_CHANNEL: stderr
+      VIEW_COMPILED_PATH: /tmp/views
+    volumes:
+      - storage_data:/var/www/html/storage
+    depends_on:
+      - mongo
+    networks:
+      - grocerynet
+
+  mongo:
+    image: mongo:7
+    container_name: grocerydeals_mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: grocerydeals
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - grocerynet
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: grocerydeals_mongoui
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin123
+    depends_on:
+      - mongo
+    networks:
+      - grocerynet
+
+volumes:
+  mongo_data:
+  storage_data:
+
+networks:
+  grocerynet:
+    driver: bridge
