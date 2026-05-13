@@ -21,7 +21,14 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Throwable $e) {
+            http_response_code(500);
+            echo "<h1>Original Laravel Exception</h1>";
+            echo "<b>Message:</b> " . $e->getMessage() . "<br><br>";
+            echo "<b>File:</b> " . $e->getFile() . " on line " . $e->getLine() . "<br><br>";
+            echo "<b>Trace:</b><br><pre>" . $e->getTraceAsString() . "</pre>";
+            die();
+        });
     })->create();
 
 $app->useStoragePath($_ENV['APP_STORAGE'] ?? storage_path());
