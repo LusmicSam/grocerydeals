@@ -31,10 +31,12 @@ return Application::configure(basePath: dirname(__DIR__))
         });
     })->create();
 
-$app->useStoragePath($_ENV['APP_STORAGE'] ?? storage_path());
+$isVercel = isset($_ENV['VERCEL']) || isset($_SERVER['VERCEL']) || getenv('VERCEL') || isset($_SERVER['VERCEL_URL']);
 
-if (isset($_ENV['APP_STORAGE'])) {
-    $app->useBootstrapPath($_ENV['APP_STORAGE'] . '/bootstrap');
+$app->useStoragePath($isVercel ? '/tmp/storage' : storage_path());
+
+if ($isVercel) {
+    $app->useBootstrapPath('/tmp/storage/bootstrap');
 }
 
 return $app;
