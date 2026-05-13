@@ -26,8 +26,8 @@
     <div class="container">
         <div class="row mb-5 align-items-end fade-up">
             <div class="col-md-6">
-                <h1 class="section-title mb-2">Our Fresh Catalog</h1>
-                <p style="color:var(--text-muted);" class="mb-0">Browse our full range of farm-fresh products and essentials.</p>
+                <h1 class="section-title mb-2">{{ __('grocery.our_catalog') }}</h1>
+                <p style="color:var(--text-muted);" class="mb-0">{{ __('grocery.catalog_sub') }}</p>
             </div>
             <div class="col-md-6 text-md-end mt-3 mt-md-0">
                 <div class="d-inline-flex gap-2">
@@ -41,11 +41,11 @@
             <!-- Sidebar Filters -->
             <div class="col-lg-3">
                 <div class="filter-card card border-0 rounded-xl shadow-sm p-4 sticky-top" style="top: 90px;">
-                    <h5 class="fw-bold mb-4">🏷️ Categories</h5>
+                    <h5 class="fw-bold mb-4">🏷️ {{ __('grocery.categories') }}</h5>
                     <ul class="list-unstyled mb-0">
                         <li class="mb-2">
                             <a href="{{ route('products.index') }}" class="cat-link {{ !request('category') ? 'active-cat' : '' }}">
-                                <i class="bi bi-grid me-2 small"></i>All Products
+                                <i class="bi bi-grid me-2 small"></i>{{ __('grocery.all_products') }}
                             </a>
                         </li>
                         @foreach([
@@ -67,7 +67,7 @@
 
                     <hr class="my-4" style="opacity: 0.15;">
 
-                    <h5 class="fw-bold mb-3">💰 Price Range</h5>
+                    <h5 class="fw-bold mb-3">💰 {{ __('grocery.price_range') }}</h5>
                     <input type="range" class="form-range" min="0" max="1000" step="50" id="priceRange" oninput="document.getElementById('priceVal').textContent='₹'+this.value">
                     <div class="d-flex justify-content-between small" style="color:var(--text-muted);">
                         <span>₹0</span>
@@ -76,7 +76,7 @@
 
                     <hr class="my-4" style="opacity: 0.15;">
 
-                    <h5 class="fw-bold mb-3">⭐ Min Rating</h5>
+                    <h5 class="fw-bold mb-3">⭐ {{ __('grocery.min_rating') }}</h5>
                     <div class="d-flex gap-1">
                         @for($r=1;$r<=5;$r++)
                         <span class="stars" style="cursor:pointer; font-size:1.2rem;"><i class="bi bi-star-fill"></i></span>
@@ -138,12 +138,12 @@
                                                 <form action="{{ route('cart.add', $product->_id) }}" method="POST">
                                                     @csrf
                                                     <button type="submit" class="btn btn-add-cart">
-                                                        <i class="bi bi-cart-plus me-1"></i> Add to Cart
+                                                        <i class="bi bi-cart-plus me-1"></i> {{ __('grocery.add_to_cart') }}
                                                     </button>
                                                 </form>
                                             @else
                                                 <a href="{{ route('login') }}" class="btn btn-add-cart">
-                                                    <i class="bi bi-cart-plus me-1"></i> Add to Cart
+                                                    <i class="bi bi-cart-plus me-1"></i> {{ __('grocery.add_to_cart') }}
                                                 </a>
                                             @endauth
                                         </div>
@@ -159,9 +159,9 @@
                 @else
                     <div class="text-center py-5 fade-up">
                         <div class="display-1 mb-4">🛒</div>
-                        <h3>No products found</h3>
+                        <h3>{{ __('grocery.no_products') }}</h3>
                         <p style="color:var(--text-muted);">Try adjusting your filters or category.</p>
-                        <a href="{{ route('products.index') }}" class="btn btn-success rounded-pill mt-3">Reset All Filters</a>
+                        <a href="{{ route('products.index') }}" class="btn btn-success rounded-pill mt-3">{{ __('grocery.reset_filters') }}</a>
                     </div>
                 @endif
             </div>

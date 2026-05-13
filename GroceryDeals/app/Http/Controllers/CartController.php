@@ -4,40 +4,64 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use App\Models\Product;
 
 class CartController extends Controller
 {
     // Display the cart
     public function index()
     {
-        // Show storing and accessing session data
-        $sessionData = session()->all();
-        $hasCart = session()->has('cart');
-        
-        $cart = session()->get('cart', []);
-        
-        return view('cart.index', compact('cart', 'hasCart', 'sessionData'));
+        $cart  = session()->get('cart', []);
+        $total = 0;
+        $cleaned = [];
+
+        // Enrich cart with latest product data from DB
+        // Also removes stale items that lack price (old session data before fix)
+        foreach ($cart as $id => $item) {
+            $product = Product::find($id);
+            if ($product) {
+                $item['name']     = $product->name;
+                $item['price']    = round($product->price * (1 - ($product->discount_percentage ?? 0) / 100), 2);
+                $item['image']    = $product->image_url ?? null;
+                $item['category'] = $product->category ?? '';
+                $item['discount'] = $product->discount_percentage ?? 0;
+                $total += $item['price'] * ($item['quantity'] ?? 1);
+                $cleaned[$id] = $item;
+            }
+            // stale items (product deleted or old session without price) are silently dropped
+        }
+
+        // Persist cleaned cart back to session
+        session()->put('cart', $cleaned);
+        $cart = $cleaned;
+
+        return view('cart.index', compact('cart', 'total'));
     }
 
     public function addToCart($productId)
     {
-        // Example: session()->get()
+        $product = Product::find($productId);
+        if (!$product) {
+            return redirect()->back()->with('error', 'Product not found.');
+        }
+
         $cart = session()->get('cart', []);
-        
+
         if (isset($cart[$productId])) {
             $cart[$productId]['quantity']++;
         } else {
             $cart[$productId] = [
-                'id' => $productId,
-                'quantity' => 1
+                'id'       => $productId,
+                'quantity' => 1,
+                'name'     => $product->name,
+                'price'    => $product->price * (1 - ($product->discount_percentage ?? 0) / 100),
+                'image'    => $product->image_url ?? null,
+                'category' => $product->category ?? '',
             ];
         }
 
-        // Example: session()->put()
         session()->put('cart', $cart);
-        
-        // Flash messages
-        session()->flash('success', 'Item added to cart!');
+        session()->flash('success', '✅ ' . $product->name . ' added to cart!');
 
         return redirect()->back();
     }
@@ -45,14 +69,12 @@ class CartController extends Controller
     public function removeFromCart($productId)
     {
         $cart = session()->get('cart', []);
-        
+
         if (isset($cart[$productId])) {
+            $name = $cart[$productId]['name'] ?? 'Item';
             unset($cart[$productId]);
-            
-            // Example: session()->put()
             session()->put('cart', $cart);
-            
-            session()->flash('success', 'Item removed from cart!');
+            session()->flash('success', $name . ' removed from cart.');
         }
 
         return redirect()->back();
@@ -60,21 +82,13 @@ class CartController extends Controller
 
     public function getCart()
     {
-        // Return all cart items
         return response()->json(session()->get('cart', []));
     }
 
     public function clearCart()
     {
-        // Example: Session::forget('cart')
         Session::forget('cart');
-        // Equivalent to: session()->forget('cart');
-        
-        // Note: to clear EVERYTHING from the session, use session()->flush()
-        // Example: session()->flush(); // Un-commenting this would clear all session data including login
-        
         session()->flash('success', 'Cart cleared successfully!');
-        
-        return redirect()->back();
+        return redirect()->route('cart.index');
     }
 }
