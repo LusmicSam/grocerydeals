@@ -33,4 +33,8 @@ return Application::configure(basePath: dirname(__DIR__))
 
 $app->useStoragePath($_ENV['APP_STORAGE'] ?? storage_path());
 
+if (isset($_ENV['APP_STORAGE'])) {
+    $app->useBootstrapPath($_ENV['APP_STORAGE'] . '/bootstrap');
+}
+
 return $app;

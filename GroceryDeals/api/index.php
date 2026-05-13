@@ -11,6 +11,7 @@ $_SERVER['SCRIPT_FILENAME'] = __DIR__ . '/../public/index.php';
 if (!is_dir('/tmp/storage')) {
     mkdir('/tmp/storage', 0777, true);
     mkdir('/tmp/storage/app/public', 0777, true);
+    mkdir('/tmp/storage/bootstrap/cache', 0777, true);
     mkdir('/tmp/storage/framework/cache/data', 0777, true);
     mkdir('/tmp/storage/framework/sessions', 0777, true);
     mkdir('/tmp/storage/framework/views', 0777, true);
