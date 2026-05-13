@@ -38,7 +38,8 @@
     "CACHE_DRIVER": "array",
     "LOG_CHANNEL": "stderr",
     "SESSION_DRIVER": "cookie",
-    "VIEW_COMPILED_PATH": "/tmp",
+    "VIEW_COMPILED_PATH": "/tmp/storage/framework/views",
+    "APP_STORAGE": "/tmp/storage",
     "FILESYSTEM_DISK": "local"
   }
 }
